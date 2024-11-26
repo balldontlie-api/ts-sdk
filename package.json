@@ -1,0 +1,27 @@
+{
+  "name": "@balldontlie/sdk",
+  "version": "1.0.0",
+  "description": "Official TypeScript/JavaScript SDK for the balldontlie API",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "nba",
+    "nfl",
+    "mlb",
+    "sports",
+    "api",
+    "sdk"
+  ],
+  "author": "BALLDONTLIE",
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
