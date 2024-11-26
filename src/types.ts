@@ -1,4 +1,12 @@
-// Base types
+export class APIError extends Error {
+  status: number;
+
+  constructor(message: string, status: number) {
+    super(message);
+    this.status = status;
+    this.name = "APIError";
+  }
+}
 export interface Pagination {
   next_cursor: number;
   per_page: number;
@@ -9,11 +17,6 @@ export interface ApiResponse<T> {
   meta?: Pagination;
 }
 
-export interface Error {
-  error: string;
-}
-
-// NBA Types
 export interface NBATeam {
   id: number;
   conference: "East" | "West";
@@ -682,7 +685,10 @@ export class BaseClient {
 
     if (!response.ok) {
       const error = (await response.json()) as Error;
-      throw new Error(error.error || `HTTP error! status: ${response.status}`);
+      throw new APIError(
+        error.message || error.name || `HTTP error! status: ${response.status}`,
+        response.status
+      );
     }
 
     return response.json() as Promise<T>;
