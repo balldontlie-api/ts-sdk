@@ -5,7 +5,9 @@
     "declaration": true,
     "outDir": "./dist",
     "strict": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "lib": ["es2017", "dom"],
+    "noImplicitAny": false
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]
