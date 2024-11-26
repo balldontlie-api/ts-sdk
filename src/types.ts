@@ -684,9 +684,16 @@ export class BaseClient {
     });
 
     if (!response.ok) {
-      const error = (await response.json()) as Error;
+      const text = await response.text();
+      let message: string;
+      try {
+        const error = JSON.parse(text);
+        message = error.error;
+      } catch {
+        message = text;
+      }
       throw new APIError(
-        error.message || error.name || `HTTP error! status: ${response.status}`,
+        message || `HTTP error! status: ${response.status}`,
         response.status
       );
     }
