@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "types": ["mocha", "chai", "node"],
     "target": "es6",
     "module": "commonjs",
     "declaration": true,
@@ -9,6 +10,6 @@
     "lib": ["es2017", "dom"],
     "noImplicitAny": false
   },
-  "include": ["src"],
+  "include": ["src", "tests/**/*"],
   "exclude": ["node_modules", "dist"]
 }
