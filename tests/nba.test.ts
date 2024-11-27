@@ -92,7 +92,7 @@ describe("NBA API", () => {
   });
 
   describe("Stats", () => {
-    it.only("should get player stats", async () => {
+    it("should get player stats", async () => {
       const stats = await api.nba.getStats({
         per_page: 1,
       });

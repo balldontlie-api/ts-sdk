@@ -336,17 +336,17 @@ export interface NFLAdvancedRushingStats {
   player: NFLPlayer;
   season: number;
   week: number;
-  avgTimeToLos: number;
-  expectedRushYards: number;
-  rushAttempts: number;
-  rushPctOverExpected: number;
-  rushTouchdowns: number;
-  rushYards: number;
-  rushYardsOverExpected: number;
-  rushYardsOverExpectedPerAtt: number;
+  avg_time_to_los: number;
+  expected_rush_yards: number;
+  rush_attempts: number;
+  rush_pct_over_expected: number;
+  rush_touchdowns: number;
+  rush_yards: number;
+  rush_yards_over_expected: number;
+  rush_yards_over_expected_per_att: number;
   efficiency: number;
-  percentAttemptsGteEightDefenders: number;
-  avgRushYards: number;
+  percent_attempts_gte_eight_defenders: number;
+  avg_rush_yards: number;
 }
 
 export interface NFLAdvancedPassingStats {
@@ -355,34 +355,34 @@ export interface NFLAdvancedPassingStats {
   week: number;
   aggressiveness: number;
   attempts: number;
-  avgAirDistance: number;
-  avgAirYardsDifferential: number;
-  avgAirYardsToSticks: number;
-  avgCompletedAirYards: number;
-  avgIntendedAirYards: number;
-  avgTimeToThrow: number;
-  completionPercentage: number;
-  completionPercentageAboveExpectation: number;
+  avg_air_distance: number;
+  avg_air_yards_differential: number;
+  avg_air_yards_to_sticks: number;
+  avg_completed_air_yards: number;
+  avg_intended_air_yards: number;
+  avg_time_to_throw: number;
+  completion_percentage: number;
+  completion_percentage_above_expectation: number;
   completions: number;
-  expectedCompletionPercentage: number;
-  maxAirDistance: number;
-  maxCompletedAirDistance: number;
-  passerRating: number;
+  expected_completion_percentage: number;
+  max_air_distance: number;
+  max_completed_air_distance: number;
+  passer_rating: number;
 }
 
 export interface NFLAdvancedReceivingStats {
   player: NFLPlayer;
   season: number;
   week: number;
-  avgCushion: number;
-  avgExpectedYac: number;
-  avgIntendedAirYards: number;
-  avgSeparation: number;
-  avgYac: number;
-  avgYacAboveExpectation: number;
-  catchPercentage: number;
-  percentShareOfIntendedAirYards: number;
-  recTouchdowns: number;
+  avg_cushion: number;
+  avg_expected_yac: number;
+  avg_intended_air_yards: number;
+  avg_separation: number;
+  avg_yac: number;
+  avg_yac_above_expectation: number;
+  catch_percentage: number;
+  percent_share_of_intended_air_yards: number;
+  rec_touchdowns: number;
   receptions: number;
   targets: number;
   yards: number;
