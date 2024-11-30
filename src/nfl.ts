@@ -1,5 +1,5 @@
-import {
-  BaseClient,
+import { BaseClient } from "./client";
+import type {
   ApiResponse,
   NFLTeam,
   NFLPlayer,
@@ -18,12 +18,18 @@ export class NFLClient extends BaseClient {
     division?: string;
     conference?: string;
   }): Promise<ApiResponse<NFLTeam[]>> {
-    const queryParams = new URLSearchParams(params as Record<string, string>);
-    return this.request<ApiResponse<NFLTeam[]>>(`/nfl/v1/teams?${queryParams}`);
+    return this.request<ApiResponse<NFLTeam[]>>(`/nfl/v1/teams`, {
+      method: "GET",
+      params: this.buildQueryParams(params),
+    });
   }
 
   async getTeam(id: number): Promise<ApiResponse<NFLTeam>> {
     return this.request<ApiResponse<NFLTeam>>(`/nfl/v1/teams/${id}`);
+  }
+
+  async getPlayer(id: number): Promise<ApiResponse<NFLPlayer>> {
+    return this.request<ApiResponse<NFLPlayer>>(`/nfl/v1/players/${id}`);
   }
 
   async getPlayers(params?: {
@@ -35,19 +41,10 @@ export class NFLClient extends BaseClient {
     first_name?: string;
     last_name?: string;
   }): Promise<ApiResponse<NFLPlayer[]>> {
-    const queryParams = new URLSearchParams();
-    if (params) {
-      Object.entries(params).forEach(([key, value]) => {
-        if (Array.isArray(value)) {
-          value.forEach((v) => queryParams.append(`${key}[]`, v.toString()));
-        } else if (value !== undefined) {
-          queryParams.append(key, value.toString());
-        }
-      });
-    }
-    return this.request<ApiResponse<NFLPlayer[]>>(
-      `/nfl/v1/players?${queryParams}`
-    );
+    return this.request<ApiResponse<NFLPlayer[]>>(`/nfl/v1/players`, {
+      method: "GET",
+      params: this.buildQueryParams(params),
+    });
   }
 
   async getActivePlayers(params?: {
@@ -59,19 +56,10 @@ export class NFLClient extends BaseClient {
     first_name?: string;
     last_name?: string;
   }): Promise<ApiResponse<NFLPlayer[]>> {
-    const queryParams = new URLSearchParams();
-    if (params) {
-      Object.entries(params).forEach(([key, value]) => {
-        if (Array.isArray(value)) {
-          value.forEach((v) => queryParams.append(`${key}[]`, v.toString()));
-        } else if (value !== undefined) {
-          queryParams.append(key, value.toString());
-        }
-      });
-    }
-    return this.request<ApiResponse<NFLPlayer[]>>(
-      `/nfl/v1/players/active?${queryParams}`
-    );
+    return this.request<ApiResponse<NFLPlayer[]>>(`/nfl/v1/players/active`, {
+      method: "GET",
+      params: this.buildQueryParams(params),
+    });
   }
 
   async getGames(params?: {
@@ -83,17 +71,10 @@ export class NFLClient extends BaseClient {
     postseason?: boolean;
     weeks?: number[];
   }): Promise<ApiResponse<NFLGame[]>> {
-    const queryParams = new URLSearchParams();
-    if (params) {
-      Object.entries(params).forEach(([key, value]) => {
-        if (Array.isArray(value)) {
-          value.forEach((v) => queryParams.append(`${key}[]`, v.toString()));
-        } else if (value !== undefined) {
-          queryParams.append(key, value.toString());
-        }
-      });
-    }
-    return this.request<ApiResponse<NFLGame[]>>(`/nfl/v1/games?${queryParams}`);
+    return this.request<ApiResponse<NFLGame[]>>(`/nfl/v1/games`, {
+      method: "GET",
+      params: this.buildQueryParams(params),
+    });
   }
 
   async getGame(id: number): Promise<ApiResponse<NFLGame>> {
@@ -107,28 +88,19 @@ export class NFLClient extends BaseClient {
     game_ids?: number[];
     seasons?: number[];
   }): Promise<ApiResponse<NFLStats[]>> {
-    const queryParams = new URLSearchParams();
-    if (params) {
-      Object.entries(params).forEach(([key, value]) => {
-        if (Array.isArray(value)) {
-          value.forEach((v) => queryParams.append(`${key}[]`, v.toString()));
-        } else if (value !== undefined) {
-          queryParams.append(key, value.toString());
-        }
-      });
-    }
-    return this.request<ApiResponse<NFLStats[]>>(
-      `/nfl/v1/stats?${queryParams}`
-    );
+    return this.request<ApiResponse<NFLStats[]>>(`/nfl/v1/stats`, {
+      method: "GET",
+      params: this.buildQueryParams(params),
+    });
   }
 
   async getStandings(params: {
     season: number;
   }): Promise<ApiResponse<NFLStandings[]>> {
-    const queryParams = new URLSearchParams(this.buildQueryParams(params));
-    return this.request<ApiResponse<NFLStandings[]>>(
-      `/nfl/v1/standings?${queryParams}`
-    );
+    return this.request<ApiResponse<NFLStandings[]>>(`/nfl/v1/standings`, {
+      method: "GET",
+      params: this.buildQueryParams(params),
+    });
   }
 
   async getPlayerInjuries(params?: {
@@ -137,9 +109,12 @@ export class NFLClient extends BaseClient {
     team_ids?: number[];
     player_ids?: number[];
   }): Promise<ApiResponse<NFLPlayerInjury[]>> {
-    const queryParams = new URLSearchParams(this.buildQueryParams(params));
     return this.request<ApiResponse<NFLPlayerInjury[]>>(
-      `/nfl/v1/player_injuries?${queryParams}`
+      `/nfl/v1/player_injuries`,
+      {
+        method: "GET",
+        params: this.buildQueryParams(params),
+      }
     );
   }
 
@@ -151,10 +126,10 @@ export class NFLClient extends BaseClient {
     sort_by?: string;
     sort_order?: "asc" | "desc";
   }): Promise<ApiResponse<NFLSeasonStats[]>> {
-    const queryParams = new URLSearchParams(this.buildQueryParams(params));
-    return this.request<ApiResponse<NFLSeasonStats[]>>(
-      `/nfl/v1/season_stats?${queryParams}`
-    );
+    return this.request<ApiResponse<NFLSeasonStats[]>>(`/nfl/v1/season_stats`, {
+      method: "GET",
+      params: this.buildQueryParams(params),
+    });
   }
 
   async getAdvancedRushingStats(params: {
@@ -162,9 +137,12 @@ export class NFLClient extends BaseClient {
     player_id?: number;
     week?: number;
   }): Promise<ApiResponse<NFLAdvancedRushingStats[]>> {
-    const queryParams = new URLSearchParams(this.buildQueryParams(params));
     return this.request<ApiResponse<NFLAdvancedRushingStats[]>>(
-      `/nfl/v1/advanced_stats/rushing?${queryParams}`
+      `/nfl/v1/advanced_stats/rushing`,
+      {
+        method: "GET",
+        params: this.buildQueryParams(params),
+      }
     );
   }
 
@@ -173,9 +151,12 @@ export class NFLClient extends BaseClient {
     player_id?: number;
     week?: number;
   }): Promise<ApiResponse<NFLAdvancedPassingStats[]>> {
-    const queryParams = new URLSearchParams(this.buildQueryParams(params));
     return this.request<ApiResponse<NFLAdvancedPassingStats[]>>(
-      `/nfl/v1/advanced_stats/passing?${queryParams}`
+      `/nfl/v1/advanced_stats/passing`,
+      {
+        method: "GET",
+        params: this.buildQueryParams(params),
+      }
     );
   }
 
@@ -184,9 +165,12 @@ export class NFLClient extends BaseClient {
     player_id?: number;
     week?: number;
   }): Promise<ApiResponse<NFLAdvancedReceivingStats[]>> {
-    const queryParams = new URLSearchParams(this.buildQueryParams(params));
     return this.request<ApiResponse<NFLAdvancedReceivingStats[]>>(
-      `/nfl/v1/advanced_stats/receiving?${queryParams}`
+      `/nfl/v1/advanced_stats/receiving`,
+      {
+        method: "GET",
+        params: this.buildQueryParams(params),
+      }
     );
   }
 }

@@ -1,5 +1,5 @@
-import {
-  BaseClient,
+import { BaseClient } from "./client";
+import type {
   ApiResponse,
   NBATeam,
   NBAPlayer,
@@ -11,6 +11,7 @@ import {
   NBAAdvancedStats,
   NBAOdds,
   NBAPlayerInjury,
+  NBALeader,
 } from "./types";
 
 export class NBAClient extends BaseClient {
@@ -18,8 +19,10 @@ export class NBAClient extends BaseClient {
     division?: string;
     conference?: string;
   }): Promise<ApiResponse<NBATeam[]>> {
-    const queryParams = new URLSearchParams(params as Record<string, string>);
-    return this.request<ApiResponse<NBATeam[]>>(`/nba/v1/teams?${queryParams}`);
+    return this.request<ApiResponse<NBATeam[]>>(`/nba/v1/teams`, {
+      method: "GET",
+      params: this.buildQueryParams(params),
+    });
   }
 
   async getTeam(id: number): Promise<ApiResponse<NBATeam>> {
@@ -35,19 +38,10 @@ export class NBAClient extends BaseClient {
     first_name?: string;
     last_name?: string;
   }): Promise<ApiResponse<NBAPlayer[]>> {
-    const queryParams = new URLSearchParams();
-    if (params) {
-      Object.entries(params).forEach(([key, value]) => {
-        if (Array.isArray(value)) {
-          value.forEach((v) => queryParams.append(`${key}[]`, v.toString()));
-        } else if (value !== undefined) {
-          queryParams.append(key, value.toString());
-        }
-      });
-    }
-    return this.request<ApiResponse<NBAPlayer[]>>(
-      `/nba/v1/players?${queryParams}`
-    );
+    return this.request<ApiResponse<NBAPlayer[]>>(`/nba/v1/players`, {
+      method: "GET",
+      params: this.buildQueryParams(params),
+    });
   }
 
   async getPlayer(id: number): Promise<ApiResponse<NBAPlayer>> {
@@ -63,19 +57,10 @@ export class NBAClient extends BaseClient {
     first_name?: string;
     last_name?: string;
   }): Promise<ApiResponse<NBAPlayer[]>> {
-    const queryParams = new URLSearchParams();
-    if (params) {
-      Object.entries(params).forEach(([key, value]) => {
-        if (Array.isArray(value)) {
-          value.forEach((v) => queryParams.append(`${key}[]`, v.toString()));
-        } else if (value !== undefined) {
-          queryParams.append(key, value.toString());
-        }
-      });
-    }
-    return this.request<ApiResponse<NBAPlayer[]>>(
-      `/nba/v1/players/active?${queryParams}`
-    );
+    return this.request<ApiResponse<NBAPlayer[]>>(`/nba/v1/players/active`, {
+      method: "GET",
+      params: this.buildQueryParams(params),
+    });
   }
 
   async getGames(params?: {
@@ -88,17 +73,10 @@ export class NBAClient extends BaseClient {
     start_date?: string;
     end_date?: string;
   }): Promise<ApiResponse<NBAGame[]>> {
-    const queryParams = new URLSearchParams();
-    if (params) {
-      Object.entries(params).forEach(([key, value]) => {
-        if (Array.isArray(value)) {
-          value.forEach((v) => queryParams.append(`${key}[]`, v.toString()));
-        } else if (value !== undefined) {
-          queryParams.append(key, value.toString());
-        }
-      });
-    }
-    return this.request<ApiResponse<NBAGame[]>>(`/nba/v1/games?${queryParams}`);
+    return this.request<ApiResponse<NBAGame[]>>(`/nba/v1/games`, {
+      method: "GET",
+      params: this.buildQueryParams(params),
+    });
   }
 
   async getGame(id: number): Promise<ApiResponse<NBAGame>> {
@@ -116,41 +94,32 @@ export class NBAClient extends BaseClient {
     start_date?: string;
     end_date?: string;
   }): Promise<ApiResponse<NBAStats[]>> {
-    const queryParams = new URLSearchParams();
-    if (params) {
-      Object.entries(params).forEach(([key, value]) => {
-        if (Array.isArray(value)) {
-          value.forEach((v) => queryParams.append(`${key}[]`, v.toString()));
-        } else if (value !== undefined) {
-          queryParams.append(key, value.toString());
-        }
-      });
-    }
-    return this.request<ApiResponse<NBAStats[]>>(
-      `/nba/v1/stats?${queryParams}`
-    );
+    return this.request<ApiResponse<NBAStats[]>>(`/nba/v1/stats`, {
+      method: "GET",
+      params: this.buildQueryParams(params),
+    });
   }
 
   async getSeasonAverages(params: {
     season: number;
     player_id: number;
   }): Promise<ApiResponse<NBASeasonAverages[]>> {
-    const queryParams = new URLSearchParams();
-    queryParams.append("season", params.season.toString());
-    queryParams.append("player_id", params.player_id.toString());
     return this.request<ApiResponse<NBASeasonAverages[]>>(
-      `/nba/v1/season_averages?${queryParams}`
+      `/nba/v1/season_averages`,
+      {
+        method: "GET",
+        params: this.buildQueryParams(params),
+      }
     );
   }
 
   async getStandings(params: {
     season: number;
   }): Promise<ApiResponse<NBAStandings[]>> {
-    const queryParams = new URLSearchParams();
-    queryParams.append("season", params.season.toString());
-    return this.request<ApiResponse<NBAStandings[]>>(
-      `/nba/v1/standings?${queryParams}`
-    );
+    return this.request<ApiResponse<NBAStandings[]>>(`/nba/v1/standings`, {
+      method: "GET",
+      params: this.buildQueryParams(params),
+    });
   }
 
   async getLiveBoxScores(): Promise<ApiResponse<NBABoxScore[]>> {
@@ -158,10 +127,10 @@ export class NBAClient extends BaseClient {
   }
 
   async getBoxScores(date: string): Promise<ApiResponse<NBABoxScore[]>> {
-    const queryParams = new URLSearchParams({ date });
-    return this.request<ApiResponse<NBABoxScore[]>>(
-      `/nba/v1/box_scores?${queryParams}`
-    );
+    return this.request<ApiResponse<NBABoxScore[]>>(`/nba/v1/box_scores`, {
+      method: "GET",
+      params: this.buildQueryParams({ date }),
+    });
   }
 
   async getPlayerInjuries(params?: {
@@ -170,18 +139,42 @@ export class NBAClient extends BaseClient {
     team_ids?: number[];
     player_ids?: number[];
   }): Promise<ApiResponse<NBAPlayerInjury[]>> {
-    const queryParams = new URLSearchParams(this.buildQueryParams(params));
     return this.request<ApiResponse<NBAPlayerInjury[]>>(
-      `/nba/v1/player_injuries?${queryParams}`
+      `/nba/v1/player_injuries`,
+      {
+        method: "GET",
+        params: this.buildQueryParams(params),
+      }
     );
   }
 
-  async getOdds(params?: {
-    date?: string;
+  async getLeaders(params: {
+    stat_type:
+      | "reb"
+      | "dreb"
+      | "tov"
+      | "ast"
+      | "oreb"
+      | "min"
+      | "pts"
+      | "stl"
+      | "blk";
+    season: number;
+  }): Promise<ApiResponse<NBALeader[]>> {
+    return this.request<ApiResponse<NBALeader[]>>(`/nba/v1/leaders?`, {
+      method: "GET",
+      params: this.buildQueryParams(params),
+    });
+  }
+
+  async getOdds(params: {
+    date: string;
     game_id?: number;
   }): Promise<ApiResponse<NBAOdds[]>> {
-    const queryParams = new URLSearchParams(this.buildQueryParams(params));
-    return this.request<ApiResponse<NBAOdds[]>>(`/nba/v1/odds?${queryParams}`);
+    return this.request<ApiResponse<NBAOdds[]>>(`/nba/v1/odds?`, {
+      method: "GET",
+      params: this.buildQueryParams(params),
+    });
   }
 
   async getAdvancedStats(params?: {
@@ -193,9 +186,12 @@ export class NBAClient extends BaseClient {
     seasons?: number[];
     postseason?: boolean;
   }): Promise<ApiResponse<NBAAdvancedStats[]>> {
-    const queryParams = new URLSearchParams(this.buildQueryParams(params));
     return this.request<ApiResponse<NBAAdvancedStats[]>>(
-      `/nba/v1/stats/advanced?${queryParams}`
+      `/nba/v1/stats/advanced`,
+      {
+        method: "GET",
+        params: this.buildQueryParams(params),
+      }
     );
   }
 }

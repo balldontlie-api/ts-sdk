@@ -1,5 +1,5 @@
-import {
-  BaseClient,
+import { BaseClient } from "./client";
+import type {
   ApiResponse,
   MLBTeam,
   MLBPlayer,
@@ -16,8 +16,10 @@ export class MLBClient extends BaseClient {
     division?: string;
     league?: string;
   }): Promise<ApiResponse<MLBTeam[]>> {
-    const queryParams = new URLSearchParams(params as Record<string, string>);
-    return this.request<ApiResponse<MLBTeam[]>>(`/mlb/v1/teams?${queryParams}`);
+    return this.request<ApiResponse<MLBTeam[]>>(`/mlb/v1/teams`, {
+      method: "GET",
+      params: this.buildQueryParams(params),
+    });
   }
 
   async getTeam(id: number): Promise<ApiResponse<MLBTeam>> {
@@ -33,19 +35,14 @@ export class MLBClient extends BaseClient {
     first_name?: string;
     last_name?: string;
   }): Promise<ApiResponse<MLBPlayer[]>> {
-    const queryParams = new URLSearchParams();
-    if (params) {
-      Object.entries(params).forEach(([key, value]) => {
-        if (Array.isArray(value)) {
-          value.forEach((v) => queryParams.append(`${key}[]`, v.toString()));
-        } else if (value !== undefined) {
-          queryParams.append(key, value.toString());
-        }
-      });
-    }
-    return this.request<ApiResponse<MLBPlayer[]>>(
-      `/mlb/v1/players?${queryParams}`
-    );
+    return this.request<ApiResponse<MLBPlayer[]>>(`/mlb/v1/players`, {
+      method: "GET",
+      params: this.buildQueryParams(params),
+    });
+  }
+
+  async getPlayer(id: number): Promise<ApiResponse<MLBPlayer>> {
+    return this.request<ApiResponse<MLBPlayer>>(`/mlb/v1/players/${id}`);
   }
 
   async getActivePlayers(params?: {
@@ -57,19 +54,10 @@ export class MLBClient extends BaseClient {
     first_name?: string;
     last_name?: string;
   }): Promise<ApiResponse<MLBPlayer[]>> {
-    const queryParams = new URLSearchParams();
-    if (params) {
-      Object.entries(params).forEach(([key, value]) => {
-        if (Array.isArray(value)) {
-          value.forEach((v) => queryParams.append(`${key}[]`, v.toString()));
-        } else if (value !== undefined) {
-          queryParams.append(key, value.toString());
-        }
-      });
-    }
-    return this.request<ApiResponse<MLBPlayer[]>>(
-      `/mlb/v1/players/active?${queryParams}`
-    );
+    return this.request<ApiResponse<MLBPlayer[]>>(`/mlb/v1/players/active`, {
+      method: "GET",
+      params: this.buildQueryParams(params),
+    });
   }
 
   async getGames(params?: {
@@ -80,17 +68,10 @@ export class MLBClient extends BaseClient {
     seasons?: number[];
     postseason?: boolean;
   }): Promise<ApiResponse<MLBGame[]>> {
-    const queryParams = new URLSearchParams();
-    if (params) {
-      Object.entries(params).forEach(([key, value]) => {
-        if (Array.isArray(value)) {
-          value.forEach((v) => queryParams.append(`${key}[]`, v.toString()));
-        } else if (value !== undefined) {
-          queryParams.append(key, value.toString());
-        }
-      });
-    }
-    return this.request<ApiResponse<MLBGame[]>>(`/mlb/v1/games?${queryParams}`);
+    return this.request<ApiResponse<MLBGame[]>>(`/mlb/v1/games`, {
+      method: "GET",
+      params: this.buildQueryParams(params),
+    });
   }
 
   async getGame(id: number): Promise<ApiResponse<MLBGame>> {
@@ -104,28 +85,19 @@ export class MLBClient extends BaseClient {
     game_ids?: number[];
     seasons?: number[];
   }): Promise<ApiResponse<MLBStats[]>> {
-    const queryParams = new URLSearchParams();
-    if (params) {
-      Object.entries(params).forEach(([key, value]) => {
-        if (Array.isArray(value)) {
-          value.forEach((v) => queryParams.append(`${key}[]`, v.toString()));
-        } else if (value !== undefined) {
-          queryParams.append(key, value.toString());
-        }
-      });
-    }
-    return this.request<ApiResponse<MLBStats[]>>(
-      `/mlb/v1/stats?${queryParams}`
-    );
+    return this.request<ApiResponse<MLBStats[]>>(`/mlb/v1/stats`, {
+      method: "GET",
+      params: this.buildQueryParams(params),
+    });
   }
 
   async getStandings(params: {
     season: number;
   }): Promise<ApiResponse<MLBStandings[]>> {
-    const queryParams = new URLSearchParams(this.buildQueryParams(params));
-    return this.request<ApiResponse<MLBStandings[]>>(
-      `/mlb/v1/standings?${queryParams}`
-    );
+    return this.request<ApiResponse<MLBStandings[]>>(`/mlb/v1/standings`, {
+      method: "GET",
+      params: this.buildQueryParams(params),
+    });
   }
 
   async getPlayerInjuries(params?: {
@@ -134,9 +106,12 @@ export class MLBClient extends BaseClient {
     team_ids?: number[];
     player_ids?: number[];
   }): Promise<ApiResponse<MLBPlayerInjury[]>> {
-    const queryParams = new URLSearchParams(this.buildQueryParams(params));
     return this.request<ApiResponse<MLBPlayerInjury[]>>(
-      `/mlb/v1/player_injuries?${queryParams}`
+      `/mlb/v1/player_injuries`,
+      {
+        method: "GET",
+        params: this.buildQueryParams(params),
+      }
     );
   }
 
@@ -148,10 +123,10 @@ export class MLBClient extends BaseClient {
     sort_by?: string;
     sort_order?: "asc" | "desc";
   }): Promise<ApiResponse<MLBSeasonStats[]>> {
-    const queryParams = new URLSearchParams(this.buildQueryParams(params));
-    return this.request<ApiResponse<MLBSeasonStats[]>>(
-      `/mlb/v1/season_stats?${queryParams}`
-    );
+    return this.request<ApiResponse<MLBSeasonStats[]>>(`/mlb/v1/season_stats`, {
+      method: "GET",
+      params: this.buildQueryParams(params),
+    });
   }
 
   async getTeamSeasonStats(params: {
@@ -159,9 +134,12 @@ export class MLBClient extends BaseClient {
     team_id?: number;
     postseason?: boolean;
   }): Promise<ApiResponse<MLBTeamSeasonStats[]>> {
-    const queryParams = new URLSearchParams(this.buildQueryParams(params));
     return this.request<ApiResponse<MLBTeamSeasonStats[]>>(
-      `/mlb/v1/teams/season_stats?${queryParams}`
+      `/mlb/v1/teams/season_stats`,
+      {
+        method: "GET",
+        params: this.buildQueryParams(params),
+      }
     );
   }
 }

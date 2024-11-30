@@ -1,3 +1,4 @@
+import exp from "constants";
 import { BalldontlieAPI, APIError } from "../src";
 import { expect } from "chai";
 
@@ -12,6 +13,23 @@ describe("NBA API", () => {
 
   before(() => {
     api = new BalldontlieAPI({ apiKey: API_KEY });
+  });
+
+  describe("Leaders", () => {
+    it("should get leaders", async () => {
+      const leaders = await api.nba.getLeaders({
+        stat_type: "ast",
+        season: 2023,
+      });
+      expect(leaders.data.length).to.be.greaterThan(0);
+    });
+  });
+
+  describe("Odds", () => {
+    it("should get odds", async () => {
+      const odds = await api.nba.getOdds({ date: "2024-04-01" });
+      expect(odds.data.length).to.be.greaterThan(0);
+    });
   });
 
   describe("Teams", () => {
@@ -49,6 +67,7 @@ describe("NBA API", () => {
       expect(players.data).to.be.an("array");
       expect(players.data).to.have.lengthOf(5);
       expect(players.meta?.per_page).to.equal(5);
+      expect(players.meta?.next_cursor).to.be.a("number");
     });
 
     it("should search players by name", async () => {
@@ -69,8 +88,7 @@ describe("NBA API", () => {
     it("should get games with filters", async () => {
       const games = await api.nba.getGames({
         seasons: [2023],
-        team_ids: [1],
-        per_page: 5,
+        dates: ["2024-04-01", "2024-04-02"],
       });
       expect(games.data).to.be.an("array");
       games.data.forEach((game) => {
@@ -123,6 +141,25 @@ describe("NBA API", () => {
     });
   });
 
+  describe("Injuries", () => {
+    it("should get injuries", async () => {
+      const res = await api.nba.getPlayerInjuries();
+      expect(res.data).to.be.an("array");
+      const injury = res.data[0];
+      expect(injury).to.have.property("player");
+      expect(injury).to.have.property("status");
+    });
+  });
+
+  describe("Standings", () => {
+    it("should get standings", async () => {
+      const standings = await api.nba.getStandings({ season: 2023 });
+      expect(standings.data).to.be.an("array");
+      const s = standings.data[0];
+      expect(s).to.have.property("team");
+    });
+  });
+
   describe("Error Handling", () => {
     it("should handle 404 errors", async () => {
       try {
@@ -130,7 +167,7 @@ describe("NBA API", () => {
         expect.fail("Should have thrown error");
       } catch (e) {
         expect(e).to.be.instanceOf(APIError);
-        expect((e as any).status).to.equal(404);
+        expect((e as any).statusCode).to.equal(404);
       }
     });
   });

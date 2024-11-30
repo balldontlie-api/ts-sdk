@@ -1,12 +1,19 @@
 export class APIError extends Error {
-  status: number;
-
-  constructor(message: string, status: number) {
+  constructor(
+    message: string,
+    public statusCode: number,
+    public response?: any
+  ) {
     super(message);
-    this.status = status;
     this.name = "APIError";
   }
 }
+
+export class AuthenticationError extends APIError {}
+export class ValidationError extends APIError {}
+export class NotFoundError extends APIError {}
+export class RateLimitError extends APIError {}
+export class ServerError extends APIError {}
 export interface Pagination {
   next_cursor: number;
   per_page: number;
@@ -37,16 +44,17 @@ export interface NBAPlayer {
   id: number;
   first_name: string;
   last_name: string;
-  position: string;
-  height: string;
-  weight: string;
-  jersey_number: string;
-  college: string;
-  country: string;
-  draft_year: number;
-  draft_round: number;
-  draft_number: number;
-  team: NBATeam;
+  position: string | null;
+  height: string | null;
+  weight: string | null;
+  jersey_number: string | null;
+  college: string | null;
+  country: string | null;
+  draft_year: number | null;
+  draft_round: number | null;
+  draft_number: number | null;
+  team?: NBATeam;
+  team_id?: number;
 }
 
 export interface NBAGame {
@@ -59,56 +67,58 @@ export interface NBAGame {
   postseason: boolean;
   home_team_score: number;
   visitor_team_score: number;
-  home_team: NBATeam;
-  visitor_team: NBATeam;
+  home_team?: NBATeam;
+  home_team_id?: NBATeam;
+  visitor_team?: NBATeam;
+  visitor_team_id?: number;
 }
 
 export interface NBAStats {
   id: number;
   min: string;
-  fgm: number;
-  fga: number;
-  fg_pct: number;
-  fg3m: number;
-  fg3a: number;
-  fg3_pct: number;
-  ftm: number;
-  fta: number;
-  ft_pct: number;
-  oreb: number;
-  dreb: number;
-  reb: number;
-  ast: number;
-  stl: number;
-  blk: number;
-  turnover: number;
-  pf: number;
-  pts: number;
+  fgm: number | null;
+  fga: number | null;
+  fg_pct: number | null;
+  fg3m: number | null;
+  fg3a: number | null;
+  fg3_pct: number | null;
+  ftm: number | null;
+  fta: number | null;
+  ft_pct: number | null;
+  oreb: number | null;
+  dreb: number | null;
+  reb: number | null;
+  ast: number | null;
+  stl: number | null;
+  blk: number | null;
+  turnover: number | null;
+  pf: number | null;
+  pts: number | null;
   player: NBAPlayer;
-  team: NBATeam;
-  game: NBAGame;
+  team?: NBATeam;
+  game?: NBAGame;
 }
 
 export interface NBASeasonAverages {
   games_played: number;
-  pts: number;
-  ast: number;
-  reb: number;
-  stl: number;
-  blk: number;
-  turnover: number;
-  min: string;
-  fgm: number;
-  fga: number;
-  fg_pct: number;
-  fg3m: number;
-  fg3a: number;
-  fg3_pct: number;
-  ftm: number;
-  fta: number;
-  ft_pct: number;
-  oreb: number;
-  dreb: number;
+  pts: number | null;
+  ast: number | null;
+  reb: number | null;
+  stl: number | null;
+  blk: number | null;
+  turnover: number | null;
+  min: string | null;
+  fgm: number | null;
+  fga: number | null;
+  fg_pct: number | null;
+  fg3m: number | null;
+  fg3a: number | null;
+  fg3_pct: number | null;
+  ftm: number | null;
+  fta: number | null;
+  ft_pct: number | null;
+  oreb: number | null;
+  dreb: number | null;
   player_id: number;
   season: number;
 }
@@ -126,6 +136,10 @@ export interface NBAStandings {
   season: number;
 }
 
+export interface NBABoxScoreTeam extends NBATeam {
+  players: NBAStats[];
+}
+
 export interface NBABoxScore {
   date: string;
   season: number;
@@ -135,35 +149,13 @@ export interface NBABoxScore {
   postseason: boolean;
   home_team_score: number;
   visitor_team_score: number;
-  home_team: NBATeam;
-  visitor_team: NBATeam;
-  players: {
-    min: string;
-    fgm: number;
-    fga: number;
-    fg_pct: number;
-    fg3m: number;
-    fg3a: number;
-    fg3_pct: number;
-    ftm: number;
-    fta: number;
-    ft_pct: number;
-    oreb: number;
-    dreb: number;
-    reb: number;
-    ast: number;
-    stl: number;
-    blk: number;
-    turnover: number;
-    pf: number;
-    pts: number;
-    player: NBAPlayer;
-  }[];
+  home_team: NBABoxScoreTeam;
+  visitor_team: NBABoxScoreTeam;
 }
 export interface NBAPlayerInjury {
   player: NBAPlayer;
-  return_date: string;
-  description: string;
+  return_date: string | null;
+  description: string | null;
   status: string;
 }
 
@@ -194,27 +186,27 @@ export interface NBAOdds {
   odds_decimal_visitor: string;
   odds_american_home: string;
   odds_american_visitor: string;
-  away_spread: string;
-  over_under: string;
+  away_spread?: string;
+  over_under?: string;
 }
 
 export interface NBAAdvancedStats {
   id: number;
-  pie: number;
-  pace: number;
-  assist_percentage: number;
-  assist_ratio: number;
-  assist_to_turnover: number;
-  defensive_rating: number;
-  defensive_rebound_percentage: number;
-  effective_field_goal_percentage: number;
-  net_rating: number;
-  offensive_rating: number;
-  offensive_rebound_percentage: number;
-  rebound_percentage: number;
-  true_shooting_percentage: number;
-  turnover_ratio: number;
-  usage_percentage: number;
+  pie: number | null;
+  pace: number | null;
+  assist_percentage: number | null;
+  assist_ratio: number | null;
+  assist_to_turnover: number | null;
+  defensive_rating: number | null;
+  defensive_rebound_percentage: number | null;
+  effective_field_goal_percentage: number | null;
+  net_rating: number | null;
+  offensive_rating: number | null;
+  offensive_rebound_percentage: number | null;
+  rebound_percentage: number | null;
+  true_shooting_percentage: number | null;
+  turnover_ratio: number | null;
+  usage_percentage: number | null;
   player: NBAPlayer;
   team: NBATeam;
   game: NBAGame;
@@ -242,62 +234,110 @@ export interface NFLPlayer {
   college: string;
   experience: string;
   age: number;
-  team: NFLTeam;
+  team?: NFLTeam;
+  team_id?: number;
 }
 
 export interface NFLGame {
   id: number;
   visitor_team: NFLTeam;
   home_team: NFLTeam;
-  summary: string;
-  venue: string;
+  summary?: string;
+  venue?: string;
   week: number;
   date: string;
   season: number;
   postseason: boolean;
   status: string;
-  home_team_score: number;
-  visitor_team_score: number;
+  home_team_score: number | null;
+  home_team_q1: number | null;
+  home_team_q2: number | null;
+  home_team_q3: number | null;
+  home_team_q4: number | null;
+  home_team_ot: number | null;
+  visitor_team_score: number | null;
+  visitor_team_q1: number | null;
+  visitor_team_q2: number | null;
+  visitor_team_q3: number | null;
+  visitor_team_q4: number | null;
+  visitor_team_ot: number | null;
 }
 
 export interface NFLStats {
   player: NFLPlayer;
   team: NFLTeam;
   game: NFLGame;
-  passing_completions: number;
-  passing_attempts: number;
-  passing_yards: number;
-  yards_per_pass_attempt: number;
-  passing_touchdowns: number;
-  passing_interceptions: number;
-  sacks: number;
-  qbr: number;
-  qb_rating: number;
-  rushing_attempts: number;
-  rushing_yards: number;
-  yards_per_rush_attempt: number;
-  rushing_touchdowns: number;
-  receptions: number;
-  receiving_yards: number;
-  yards_per_reception: number;
-  receiving_touchdowns: number;
-  fumbles: number;
-  fumbles_lost: number;
+  passing_completions: number | null;
+  passing_attempts: number | null;
+  passing_yards: number | null;
+  yards_per_pass_attempt: number | null;
+  passing_touchdowns: number | null;
+  passing_interceptions: number | null;
+  sacks: number | null;
+  sacks_loss: number | null;
+  qbr: number | null;
+  qb_rating: number | null;
+  rushing_attempts: number | null;
+  rushing_yards: number | null;
+  yards_per_rush_attempt: number | null;
+  rushing_touchdowns: number | null;
+  long_rushing: number | null;
+  receptions: number | null;
+  receiving_yards: number | null;
+  yards_per_reception: number | null;
+  receiving_touchdowns: number | null;
+  long_reception: number | null;
+  receiving_targets: number | null;
+  fumbles: number | null;
+  fumbles_lost: number | null;
+  fumbles_recovered: number | null;
+  total_tackles: number | null;
+  defensive_sacks: number | null;
+  solo_tackles: number | null;
+  tackles_for_loss: number | null;
+  passes_defended: number | null;
+  qb_hits: number | null;
+  fumbles_touchdowns: number | null;
+  defensive_interceptions: number | null;
+  interception_yards: number | null;
+  interception_touchdowns: number | null;
+  kick_returns: number | null;
+  kick_return_yards: number | null;
+  yards_per_kick_return: number | null;
+  long_kick_return: number | null;
+  kick_return_touchdowns: number | null;
+  punt_returns: number | null;
+  punt_return_yards: number | null;
+  yards_per_punt_return: number | null;
+  long_punt_return: number | null;
+  punt_return_touchdowns: number | null;
+  field_goal_attempts: number | null;
+  field_goals_made: number | null;
+  field_goal_pct: number | null;
+  long_field_goal_made: number | null;
+  extra_points_made: number | null;
+  total_points: number | null;
+  punts: number | null;
+  punt_yards: number | null;
+  gross_avg_punt_yards: number | null;
+  touchbacks: number | null;
+  punts_inside_20: number | null;
+  long_punt: number | null;
 }
 
 export interface NFLStandings {
   team: NFLTeam;
-  win_streak: number;
-  points_for: number;
-  points_against: number;
-  playoff_seed: number;
-  point_differential: number;
-  overall_record: string;
-  conference_record: string;
-  division_record: string;
-  wins: number;
-  losses: number;
-  ties: number;
+  win_streak: number | null;
+  points_for: number | null;
+  points_against: number | null;
+  playoff_seed: number | null;
+  point_differential: number | null;
+  overall_record: string | null;
+  conference_record: string | null;
+  division_record: string | null;
+  wins: number | null;
+  losses: number | null;
+  ties: number | null;
   home_record: string;
   road_record: string;
   season: number;
@@ -315,21 +355,65 @@ export interface NFLSeasonStats {
   games_played: number;
   season: number;
   postseason: boolean;
-  passing_completions: number;
-  passing_attempts: number;
-  passing_yards: number;
-  passing_yards_per_game: number;
-  passing_touchdowns: number;
-  passing_interceptions: number;
-  passing_completion_pct: number;
-  rushing_attempts: number;
-  rushing_yards: number;
-  rushing_yards_per_game: number;
-  rushing_touchdowns: number;
-  receiving_receptions: number;
-  receiving_yards: number;
-  receiving_touchdowns: number;
-  receiving_targets: number;
+  passing_completions: number | null;
+  passing_attempts: number | null;
+  passing_yards: number | null;
+  yards_per_pass_attempt: number | null;
+  passing_touchdowns: number | null;
+  passing_interceptions: number | null;
+  passing_yards_per_game: number | null;
+  passing_completion_pct: number | null;
+  qbr: number | null;
+  rushing_attempts: number | null;
+  rushing_yards: number | null;
+  rushing_yards_per_game: number | null;
+  yards_per_rush_attempt: number | null;
+  rushing_touchdowns: number | null;
+  rushing_fumbles: number | null;
+  rushing_fumbles_lost: number | null;
+  rushing_first_downs: number | null;
+  receptions: number | null;
+  receiving_yards: number | null;
+  yards_per_reception: number | null;
+  receiving_touchdowns: number | null;
+  receiving_fumbles: number | null;
+  receiving_fumbles_lost: number | null;
+  receiving_first_downs: number | null;
+  receiving_targets: number | null;
+  receiving_yards_per_game: number | null;
+  fumbles_forced: number | null;
+  fumbles_recovered: number | null;
+  total_tackles: number | null;
+  defensive_sacks: number | null;
+  defensive_sack_yards: number | null;
+  solo_tackles: number | null;
+  assist_tackles: number | null;
+  fumbles_touchdowns: number | null;
+  defensive_interceptions: number | null;
+  interception_touchdowns: number | null;
+  kick_returns: number | null;
+  kick_return_yards: number | null;
+  yards_per_kick_return: number | null;
+  kick_return_touchdowns: number | null;
+  punt_returner_returns: number | null;
+  punt_returner_return_yards: number | null;
+  yards_per_punt_return: number | null;
+  punt_return_touchdowns: number | null;
+  field_goal_attempts: number | null;
+  field_goals_made: number | null;
+  field_goal_pct: number | null;
+  punts: number | null;
+  punt_yards: number | null;
+  field_goals_made_1_19: number | null;
+  field_goals_made_20_29: number | null;
+  field_goals_made_30_39: number | null;
+  field_goals_made_40_49: number | null;
+  field_goals_made_50: number | null;
+  field_goals_attempts_1_19: number | null;
+  field_goals_attempts_20_29: number | null;
+  field_goals_attempts_30_39: number | null;
+  field_goals_attempts_40_49: number | null;
+  field_goals_attempts_50: number | null;
 }
 
 export interface NFLAdvancedRushingStats {
@@ -365,8 +449,12 @@ export interface NFLAdvancedPassingStats {
   completion_percentage_above_expectation: number;
   completions: number;
   expected_completion_percentage: number;
+  games_played: number;
+  interceptions: number;
   max_air_distance: number;
   max_completed_air_distance: number;
+  pass_touchdowns: number;
+  pass_yards: number;
   passer_rating: number;
 }
 
@@ -405,18 +493,18 @@ export interface MLBPlayer {
   first_name: string;
   last_name: string;
   full_name: string;
-  debut_year: number;
-  jersey: string;
-  college: string;
+  debut_year: number | null;
+  jersey: string | null;
+  college: string | null;
   position: string;
   active: boolean;
-  birth_place: string;
-  dob: string;
-  age: number;
-  height: string;
-  weight: string;
-  draft: string;
-  bats_throws: string;
+  birth_place: string | null;
+  dob: string | null;
+  age: number | null;
+  height: string | null;
+  weight: string | null;
+  draft: string | null;
+  bats_throws: string | null;
   team: MLBTeam;
 }
 
@@ -441,35 +529,42 @@ export interface MLBGame {
     errors: number;
     inning_scores: number[];
   };
-  venue: string;
-  attendance: number;
+  venue: string | null;
+  attendance: number | null;
   status: string;
+  scoring_summary: Array<{
+    play: string;
+    inning: string;
+    period: string;
+    away_score: number;
+    home_score: number;
+  }>;
 }
 
 export interface MLBStats {
   player: MLBPlayer;
   game: MLBGame;
   team_name: string;
-  at_bats: number;
-  runs: number;
-  hits: number;
-  rbi: number;
-  hr: number;
-  bb: number;
-  k: number;
-  avg: number;
-  obp: number;
-  slg: number;
-  ip: number;
-  p_hits: number;
-  p_runs: number;
-  er: number;
-  p_bb: number;
-  p_k: number;
-  p_hr: number;
-  pitch_count: number;
-  strikes: number;
-  era: number;
+  at_bats: number | null;
+  runs: number | null;
+  hits: number | null;
+  rbi: number | null;
+  hr: number | null;
+  bb: number | null;
+  k: number | null;
+  avg: number | null;
+  obp: number | null;
+  slg: number | null;
+  ip: number | null;
+  p_hits: number | null;
+  p_runs: number | null;
+  er: number | null;
+  p_bb: number | null;
+  p_k: number | null;
+  p_hr: number | null;
+  pitch_count: number | null;
+  strikes: number | null;
+  era: number | null;
 }
 
 export interface MLBStandings {
@@ -478,13 +573,45 @@ export interface MLBStandings {
   league_short_name: string;
   division_name: string;
   division_short_name: string;
-  wins: number;
-  losses: number;
-  win_percent: number;
-  games_behind: number;
-  streak: number;
-  last_ten_games: string;
-  season: number;
+  ot_losses: number | null;
+  ot_wins: number | null;
+  avg_points_against: number | null;
+  avg_points_for: number | null;
+  clincher: number | null;
+  differential: number | null;
+  division_win_percent: number | null;
+  games_behind: number | null;
+  games_played: number | null;
+  league_win_percent: number | null;
+  losses: number | null;
+  playoff_seed: number | null;
+  point_differential: number | null;
+  game_back_points: number | null;
+  points_against: number | null;
+  points_for: number | null;
+  streak: number | null;
+  ties: number | null;
+  win_percent: number | null;
+  wins: number | null;
+  division_games_behind: number | null;
+  division_percent: number | null;
+  division_tied: number | null;
+  home_losses: number | null;
+  home_ties: number | null;
+  home_wins: number | null;
+  magic_number_division: number | null;
+  magic_number_wildcard: number | null;
+  playoff_percent: number | null;
+  road_losses: number | null;
+  road_ties: number | null;
+  road_wins: number | null;
+  wildcard_percent: number | null;
+  total: string | null;
+  home: string | null;
+  road: string | null;
+  intra_division: string | null;
+  intra_league: string | null;
+  last_ten_games: string | null;
 }
 
 export interface MLBSeasonStats {
@@ -492,35 +619,50 @@ export interface MLBSeasonStats {
   team_name: string;
   season: number;
   postseason: boolean;
-  batting_gp: number;
-  batting_ab: number;
-  batting_r: number;
-  batting_h: number;
-  batting_avg: number;
-  batting_2b: number;
-  batting_3b: number;
-  batting_hr: number;
-  batting_rbi: number;
-  batting_bb: number;
-  batting_so: number;
-  batting_sb: number;
-  batting_obp: number;
-  batting_slg: number;
-  batting_ops: number;
-  batting_war: number;
-  pitching_gp: number;
-  pitching_gs: number;
-  pitching_w: number;
-  pitching_l: number;
-  pitching_era: number;
-  pitching_sv: number;
-  pitching_ip: number;
-  pitching_h: number;
-  pitching_er: number;
-  pitching_hr: number;
-  pitching_bb: number;
-  pitching_k: number;
-  pitching_war: number;
+  batting_gp: number | null;
+  batting_ab: number | null;
+  batting_r: number | null;
+  batting_h: number | null;
+  batting_avg: number | null;
+  batting_2b: number | null;
+  batting_3b: number | null;
+  batting_hr: number | null;
+  batting_rbi: number | null;
+  batting_bb: number | null;
+  batting_so: number | null;
+  batting_sb: number | null;
+  batting_obp: number | null;
+  batting_slg: number | null;
+  batting_ops: number | null;
+  batting_war: number | null;
+  pitching_gp: number | null;
+  pitching_gs: number | null;
+  pitching_w: number | null;
+  pitching_l: number | null;
+  pitching_era: number | null;
+  pitching_sv: number | null;
+  pitching_ip: number | null;
+  pitching_h: number | null;
+  pitching_er: number | null;
+  pitching_hr: number | null;
+  pitching_bb: number | null;
+  pitching_k: number | null;
+  pitching_war: number | null;
+  fielding_gp: number | null;
+  fielding_gs: number | null;
+  fielding_fip: number | null;
+  fielding_tc: number | null;
+  fielding_po: number | null;
+  fielding_a: number | null;
+  fielding_fp: number | null;
+  fielding_e: number | null;
+  fielding_dp: number | null;
+  fielding_rf: number | null;
+  fielding_dwar: number | null;
+  fielding_pb: number | null;
+  fielding_cs: number | null;
+  fielding_cs_percent: number | null;
+  fielding_sba: number | null;
 }
 
 export interface MLBTeamSeasonStats {
@@ -528,194 +670,57 @@ export interface MLBTeamSeasonStats {
   team_name: string;
   postseason: boolean;
   season: number;
-  gp: number;
-  batting_ab: number;
-  batting_r: number;
-  batting_h: number;
-  batting_2b: number;
-  batting_3b: number;
-  batting_hr: number;
-  batting_rbi: number;
-  batting_bb: number;
-  batting_so: number;
-  batting_sb: number;
-  batting_avg: number;
-  batting_obp: number;
-  batting_slg: number;
-  batting_ops: number;
-  pitching_w: number;
-  pitching_l: number;
-  pitching_era: number;
-  pitching_sv: number;
-  pitching_ip: number;
-  pitching_h: number;
-  pitching_er: number;
-  pitching_hr: number;
-  pitching_bb: number;
-  pitching_k: number;
-  fielding_e: number;
-  fielding_fp: number;
-}
-
-export interface MLBStandings {
-  team: MLBTeam;
-  league_name: string;
-  league_short_name: string;
-  division_name: string;
-  division_short_name: string;
-  wins: number;
-  losses: number;
-  win_percent: number;
-  games_behind: number;
-  streak: number;
-  last_ten_games: string;
-  season: number;
-}
-
-export interface MLBSeasonStats {
-  player: MLBPlayer;
-  team_name: string;
-  season: number;
-  postseason: boolean;
-  batting_gp: number;
-  batting_ab: number;
-  batting_r: number;
-  batting_h: number;
-  batting_avg: number;
-  batting_2b: number;
-  batting_3b: number;
-  batting_hr: number;
-  batting_rbi: number;
-  batting_bb: number;
-  batting_so: number;
-  batting_sb: number;
-  batting_obp: number;
-  batting_slg: number;
-  batting_ops: number;
-  batting_war: number;
-  pitching_gp: number;
-  pitching_gs: number;
-  pitching_w: number;
-  pitching_l: number;
-  pitching_era: number;
-  pitching_sv: number;
-  pitching_ip: number;
-  pitching_h: number;
-  pitching_er: number;
-  pitching_hr: number;
-  pitching_bb: number;
-  pitching_k: number;
-  pitching_war: number;
-}
-
-export interface MLBTeamSeasonStats {
-  team: MLBTeam;
-  team_name: string;
-  postseason: boolean;
-  season: number;
-  gp: number;
-  batting_ab: number;
-  batting_r: number;
-  batting_h: number;
-  batting_2b: number;
-  batting_3b: number;
-  batting_hr: number;
-  batting_rbi: number;
-  batting_bb: number;
-  batting_so: number;
-  batting_sb: number;
-  batting_avg: number;
-  batting_obp: number;
-  batting_slg: number;
-  batting_ops: number;
-  pitching_w: number;
-  pitching_l: number;
-  pitching_era: number;
-  pitching_sv: number;
-  pitching_ip: number;
-  pitching_h: number;
-  pitching_er: number;
-  pitching_hr: number;
-  pitching_bb: number;
-  pitching_k: number;
-  fielding_e: number;
-  fielding_fp: number;
+  gp: number | null;
+  batting_ab: number | null;
+  batting_r: number | null;
+  batting_h: number | null;
+  batting_2b: number | null;
+  batting_3b: number | null;
+  batting_hr: number | null;
+  batting_rbi: number | null;
+  batting_tb: number | null;
+  batting_bb: number | null;
+  batting_so: number | null;
+  batting_sb: number | null;
+  batting_avg: number | null;
+  batting_obp: number | null;
+  batting_slg: number | null;
+  batting_ops: number | null;
+  pitching_w: number | null;
+  pitching_l: number | null;
+  pitching_era: number | null;
+  pitching_sv: number | null;
+  pitching_cg: number | null;
+  pitching_sho: number | null;
+  pitching_qs: number | null;
+  pitching_ip: number | null;
+  pitching_h: number | null;
+  pitching_er: number | null;
+  pitching_hr: number | null;
+  pitching_bb: number | null;
+  pitching_k: number | null;
+  pitching_oba: number | null;
+  pitching_whip: number | null;
+  fielding_e: number | null;
+  fielding_fp: number | null;
+  fielding_tc: number | null;
+  fielding_po: number | null;
+  fielding_a: number | null;
 }
 
 export interface MLBPlayerInjury {
   player: MLBPlayer;
   date: string;
-  return_date: string;
+  return_date: string | null;
   type: string;
   detail: string;
   side: string;
   status: string;
-  long_comment: string;
-  short_comment: string;
+  long_comment: string | null;
+  short_comment: string | null;
 }
 
-// Base client configuration
 export interface ClientConfig {
   apiKey: string;
   baseUrl?: string;
-}
-
-// Base client class
-export class BaseClient {
-  protected readonly baseUrl: string;
-  protected readonly headers: Record<string, string>;
-
-  constructor(config: ClientConfig) {
-    this.baseUrl = config.baseUrl || "https://api.balldontlie.io";
-    this.headers = {
-      Authorization: config.apiKey,
-      "Content-Type": "application/json",
-    };
-  }
-
-  protected async request<T>(
-    path: string,
-    options: RequestInit = {}
-  ): Promise<T> {
-    const url = `${this.baseUrl}${path}`;
-    const response = await fetch(url, {
-      ...options,
-      headers: { ...this.headers, ...options.headers },
-    });
-
-    if (!response.ok) {
-      const text = await response.text();
-      let message: string;
-      try {
-        const error = JSON.parse(text);
-        message = error.error;
-      } catch {
-        message = text;
-      }
-      throw new APIError(
-        message || `HTTP error! status: ${response.status}`,
-        response.status
-      );
-    }
-
-    return response.json() as Promise<T>;
-  }
-
-  protected buildQueryParams(
-    params?: Record<string, any>
-  ): Record<string, string> {
-    if (!params) return {};
-
-    const result: Record<string, string> = {};
-    Object.entries(params).forEach(([key, value]) => {
-      if (Array.isArray(value)) {
-        value.forEach((v, i) => {
-          result[`${key}[${i}]`] = v.toString();
-        });
-      } else if (value !== undefined) {
-        result[key] = value.toString();
-      }
-    });
-    return result;
-  }
 }

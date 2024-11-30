@@ -117,15 +117,24 @@ describe("NFL API", () => {
       it("should get passing stats", async () => {
         const stats = await api.nfl.getAdvancedPassingStats({
           season: 2023,
+          week: 1,
         });
         expect(stats.data).to.be.an("array");
+        expect(stats.data[0].week).to.equal(1);
+        expect(stats.data[0].season).to.equal(2023);
+        expect(stats.data[0].player).to.not.be.undefined;
       });
 
       it("should get receiving stats", async () => {
         const stats = await api.nfl.getAdvancedReceivingStats({
           season: 2023,
+          week: 2,
         });
         expect(stats.data).to.be.an("array");
+        const data = stats.data[0];
+        expect(data.week).to.equal(2);
+        expect(data.season).to.equal(2023);
+        expect(data.player).to.not.be.undefined;
       });
     });
   });
