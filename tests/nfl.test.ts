@@ -45,6 +45,13 @@ describe("NFL API", () => {
     });
   });
 
+  describe("Injuries", () => {
+    it("should get injuries", async () => {
+      const injuries = await api.nfl.getPlayerInjuries();
+      expect(injuries.data).to.be.an("array");
+    });
+  });
+
   describe("Players", () => {
     it("should get players with pagination", async () => {
       const players = await api.nfl.getPlayers({ per_page: 5 });
@@ -86,6 +93,14 @@ describe("NFL API", () => {
       const gameId = games.data[0].id;
       const game = await api.nfl.getGame(gameId);
       expect(game.data).to.have.property("id", gameId);
+    });
+  });
+
+  describe("Standings", () => {
+    it("should get standings", async () => {
+      const res = await api.nfl.getStandings({ season: 2023 });
+      const standing = res.data[0];
+      expect(standing.season).to.equal(2023);
     });
   });
 

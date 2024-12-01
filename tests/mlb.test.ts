@@ -52,6 +52,10 @@ describe("MLB API", () => {
       const players = await api.mlb.getPlayers({ per_page: 5 });
       expect(players.data).to.be.an("array");
       expect(players.data).to.have.lengthOf(5);
+
+      const player = players.data[0];
+      const res = await api.mlb.getPlayer(player.id);
+      expect(res.data.id).to.equal(player.id);
     });
 
     it("should search players by name", async () => {
@@ -85,6 +89,20 @@ describe("MLB API", () => {
       const gameId = games.data[0].id;
       const game = await api.mlb.getGame(gameId);
       expect(game.data).to.have.property("id", gameId);
+    });
+  });
+
+  describe("Standings", () => {
+    it("should get standings", async () => {
+      const res = await api.mlb.getStandings({ season: 2023 });
+      expect(res.data).to.be.an("array");
+    });
+  });
+
+  describe("Injuries", () => {
+    it("should get injuries", async () => {
+      const injuries = await api.mlb.getPlayerInjuries();
+      expect(injuries.data).to.be.an("array");
     });
   });
 
