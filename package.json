@@ -10,6 +10,10 @@
     "test": "mocha --timeout 10000 -r ts-node/register tests/**/*.test.ts",
     "test:watch": "mocha -r ts-node tests/**/*.test.ts --watch"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/balldontlie-api/typescript"
+  },
   "keywords": [
     "nba",
     "nfl",
