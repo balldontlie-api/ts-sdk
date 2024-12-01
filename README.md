@@ -115,9 +115,9 @@ const teamStats = await api.mlb.getTeamSeasonStats({
 View the source code to see the types and function names: https://github.com/balldontlie-api/ts-sdk/tree/master/src
 
 Check out the full API documentation:
-[NBA](nba.balldontlie.io)
-[NFL](nfl.balldontlie.io)
-[MLB](mlb.balldontlie.io)
+[NBA](https://nba.balldontlie.io)
+[NFL](https://nfl.balldontlie.io)
+[MLB](https://mlb.balldontlie.io)
 
 ## Error Handling
 
