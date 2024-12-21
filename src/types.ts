@@ -724,3 +724,196 @@ export interface ClientConfig {
   apiKey: string;
   baseUrl?: string;
 }
+
+export interface EPLTeam {
+  id: number;
+  name: string;
+  short_name: string;
+  abbr: string;
+  city: string;
+  stadium: string;
+}
+
+export interface EPLPlayer {
+  id: number;
+  position: string | null;
+  national_team: string | null;
+  height: number | null;
+  weight: number | null;
+  birth_date: string | null;
+  age: string | null;
+  name?: string;
+  first_name: string | null;
+  last_name: string | null;
+  team_ids?: number[] | null;
+}
+
+export interface EPLTeamSeasonStat {
+  value: number;
+  name: string;
+  rank: number;
+  season: number;
+}
+
+export interface EPLPlayerSeasonStat {
+  value: number;
+  name: string;
+  rank: number;
+  season: number;
+}
+
+export interface EPLGame {
+  id: number;
+  week: number;
+  kickoff: string | null;
+  provisional_kickoff: string | null;
+  home_team_id: number;
+  away_team_id: number;
+  home_score: number | null;
+  away_score: number | null;
+  status: string | null;
+  season: number;
+  ground: string | null;
+  clock: number | null;
+  clock_display: string | null;
+  extra_time: boolean | null;
+}
+
+export interface EPLGameLineup {
+  team_id: number;
+  player: EPLPlayer;
+  substitute: boolean;
+  captain: boolean;
+  position: string | null;
+  shirt_number: number | null;
+  sub_clock: number | null;
+  sub_clock_display: string | null;
+}
+
+export interface EPLGameGoal {
+  game_id: number;
+  scorer: EPLPlayer;
+  assister: EPLPlayer | null;
+  clock: number;
+  clock_display: string | null;
+  phase: string | null;
+  type: string | null;
+}
+
+export interface EPLGameTeamStats {
+  game_id: number;
+  teams: Array<{
+    team_id: number;
+    stats: Array<{
+      name: string;
+      value: number;
+    }>;
+  }>;
+}
+
+export interface EPLGamePlayerStats {
+  game_id: number;
+  players: Array<{
+    team_id: number;
+    player_id: number;
+    stats: Array<{
+      name: string;
+      value: number;
+    }>;
+  }>;
+}
+
+export interface EPLStanding {
+  team: EPLTeam;
+  season: number;
+  position: number;
+  form: string;
+  home_played: number;
+  home_drawn: number;
+  home_won: number;
+  home_lost: number;
+  home_goals_against: number;
+  home_goals_difference: number;
+  home_goals_for: number;
+  home_points: number;
+  away_played: number;
+  away_drawn: number;
+  away_won: number;
+  away_lost: number;
+  away_goals_against: number;
+  away_goals_difference: number;
+  away_goals_for: number;
+  away_points: number;
+  overall_played: number;
+  overall_drawn: number;
+  overall_won: number;
+  overall_lost: number;
+  overall_goals_against: number;
+  overall_goals_difference: number;
+  overall_goals_for: number;
+  overall_points: number;
+}
+
+export interface EPLPlayerStatLeaders {
+  player: EPLPlayer;
+  season: number;
+  rank: number;
+  value: number;
+  name: EPLPlayerStatType;
+}
+
+export interface EPLTeamStatLeaders {
+  team: EPLTeam;
+  season: number;
+  rank: number;
+  value: number;
+  name: EPLTeamStatType;
+}
+
+export type EPLPlayerStatType =
+  | "goals"
+  | "goal_assist"
+  | "clean_sheet"
+  | "appearances"
+  | "mins_played"
+  | "yellow_card"
+  | "red_card"
+  | "total_pass"
+  | "touches"
+  | "total_scoring_att"
+  | "hit_woodwork"
+  | "big_chance_missed"
+  | "total_offside"
+  | "total_tackle"
+  | "fouls"
+  | "dispossessed"
+  | "own_goals"
+  | "total_clearance"
+  | "clearance_off_line"
+  | "saves"
+  | "penalty_save"
+  | "total_high_claim"
+  | "punches";
+
+export type EPLTeamStatType =
+  | "wins"
+  | "losses"
+  | "touches"
+  | "own_goals"
+  | "total_yel_card"
+  | "total_red_card"
+  | "goals"
+  | "total_pass"
+  | "total_scoring_att"
+  | "total_offside"
+  | "hit_woodwork"
+  | "big_chance_missed"
+  | "total_tackle"
+  | "total_clearance"
+  | "clearance_off_line"
+  | "dispossessed"
+  | "clean_sheet"
+  | "saves"
+  | "penalty_save"
+  | "total_high_claim"
+  | "punches";

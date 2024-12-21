@@ -1,4 +1,4 @@
-import { BalldontlieAPI, APIError } from "../src";
+import { BalldontlieAPI } from "../src";
 import { expect } from "chai";
 
 const API_KEY = process.env.BALLDONTLIE_API_KEY;

@@ -20,6 +20,7 @@ export class BaseClient {
       headers: {
         Authorization: config.apiKey,
         "Content-Type": "application/json",
+        "x-bdl-client": "js",
       },
       paramsSerializer: (params) => {
         const searchParams = new URLSearchParams();
